@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prosci Change Management Maturity Model Quick Assessment</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; background: #FFFEFA; color: #350944; height: 100vh; overflow: hidden; user-select: none; }
+
+  .header { background: #350944; padding: 14px 36px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .header h1 { color: #FFFEFA; font-family: Garamond, 'Times New Roman', serif; font-size: 22px; font-weight: bold; letter-spacing: 0.01em; flex: 1; }
+  .header-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+  .header-btn { background: #D2F7A9; color: #350944; border: none; padding: 6px 18px; border-radius: 2px; font-family: Arial, sans-serif; font-size: 12px; font-weight: bold; cursor: pointer; transition: background 0.15s; text-transform: uppercase; letter-spacing: 0.04em; }
+  .header-btn:hover { background: #b8e88a; }
+  .lang-select { background: transparent; color: #D2F7A9; border: 1px solid #D2F7A9; padding: 5px 24px 5px 10px; border-radius: 2px; font-family: Arial, sans-serif; font-size: 12px; font-weight: bold; cursor: pointer; letter-spacing: 0.04em; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23D2F7A9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+  .lang-select option { background: #350944; color: #FFFEFA; }
+  .lang-select:focus { outline: none; }
+
+  .page { display: grid; grid-template-columns: 1fr 340px; height: calc(100vh - 52px - 6px); }
+
+  .left-col { display: flex; flex-direction: column; padding: 24px 36px 20px 36px; background: #FFFEFA; }
+  .intro-title { font-family: Garamond, 'Times New Roman', serif; font-size: 20px; font-weight: normal; color: #350944; margin-bottom: 6px; letter-spacing: 0.01em; }
+  .intro-text { font-size: 13px; color: #444; line-height: 1.55; margin-bottom: 12px; max-width: 700px; }
+  .intro-text a { color: #350944; font-weight: bold; text-decoration: none; }
+  .intro-text a:hover { text-decoration: underline; }
+
+  .sliders-area { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .slider-block { display: flex; flex-direction: column; align-items: center; }
+  .slider-dim-title { font-family: Garamond, 'Times New Roman', serif; font-size: 16px; font-weight: normal; color: #350944; text-align: center; margin-bottom: 4px; }
+  .slider-row { display: grid; grid-template-columns: 170px 1fr 170px; align-items: center; gap: 12px; width: 100%; }
+  .desc-left, .desc-right { font-size: 12px; color: #666; line-height: 1.35; text-align: center; }
+
+  .custom-slider { position: relative; height: 36px; display: flex; align-items: center; cursor: pointer; touch-action: none; overflow: visible; }
+  .cs-track { position: absolute; left: 0; right: 0; height: 3px; background: #e0dbd5; border-radius: 2px; top: 50%; transform: translateY(-50%); }
+  .cs-fill { position: absolute; left: 0; height: 3px; background: #350944; border-radius: 2px; top: 50%; transform: translateY(-50%); transition: width 0.05s; }
+  .cs-ticks { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); display: flex; justify-content: space-between; pointer-events: none; }
+  .cs-tick { width: 7px; height: 7px; border-radius: 50%; background: #e0dbd5; transition: background 0.15s; }
+  .cs-tick.filled { background: #350944; }
+  .cs-thumb { position: absolute; width: 36px; height: 36px; border-radius: 50%; background: #350944; box-shadow: 0 2px 8px rgba(53,9,68,0.25); display: flex; align-items: center; justify-content: center; transform: translateX(-50%); transition: left 0.05s, transform 0.1s; cursor: grab; z-index: 2; }
+  .cs-thumb:hover { transform: translateX(-50%) scale(1.08); background: #4a1260; }
+  .cs-thumb:active { cursor: grabbing; transform: translateX(-50%) scale(1.12); }
+  .cs-thumb .cs-val { color: #D2F7A9; font-size: 12px; font-weight: bold; pointer-events: none; font-family: Arial, sans-serif; }
+
+  .right-col { display: flex; flex-direction: column; background: #F6F4ED; border-left: 1px solid #e0dbd5; padding: 24px 28px 20px; overflow-y: auto; }
+  .maturity-title { font-family: Garamond, 'Times New Roman', serif; font-size: 20px; font-weight: normal; color: #350944; margin-bottom: 6px; }
+  .maturity-desc { font-size: 12px; color: #666; line-height: 1.5; margin-bottom: 10px; }
+  .score-display { text-align: center; margin-bottom: 10px; }
+  .score-number { font-family: Garamond, 'Times New Roman', serif; font-size: 52px; font-weight: normal; color: #350944; line-height: 1; }
+  .score-label { font-size: 11px; color: #999; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; }
+
+  .levels-area { display: flex; flex-direction: column; gap: 4px; }
+  .level-item { text-align: left; padding: 8px 14px; border-radius: 2px; transition: all 0.25s; border-left: 4px solid transparent; }
+  .level-item .level-text { line-height: 1.3; }
+  .level-item .level-num { font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.08em; display: block; color: #ccc; }
+  .level-item .level-name { font-family: Garamond, 'Times New Roman', serif; font-size: 15px; font-weight: normal; display: block; color: #ccc; }
+  .level-item.active { background: #FFFEFA; border-left: 4px solid #D2F7A9; box-shadow: 0 1px 4px rgba(53,9,68,0.08); }
+  .level-item.active .level-num { color: #350944; }
+  .level-item.active .level-name { color: #350944; }
+
+  .level-detail { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s ease; padding: 0 12px; }
+  .level-detail.open { max-height: 300px; padding: 8px 14px 4px; }
+  .level-detail p { font-size: 11px; line-height: 1.55; color: #555; border-top: 1px solid #e0dbd5; padding-top: 6px; }
+
+  .print-slider { display: none; }
+  .screen-footer { height: 6px; background: #D2F7A9; }
+  .print-footer { display: none; }
+  .level-summary { display: none; }
+
+  @media (max-width: 900px) {
+    body { height: auto; overflow: auto; }
+    .page { grid-template-columns: 1fr; height: auto; }
+    .left-col { padding: 20px; }
+    .right-col { border-left: none; border-top: 1px solid #e0dbd5; padding: 20px; }
+    .slider-row { grid-template-columns: 1fr; gap: 4px; }
+    .desc-left, .desc-right { text-align: left; }
+    .header { flex-direction: column; gap: 8px; text-align: center; padding: 14px 20px; }
+    .header h1 { font-size: 17px; }
+  }
+
+  @media print {
+    body { height: auto; overflow: visible; background: #FFFEFA; }
+    .header-actions { display: none; }
+    .page {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      height: auto;
+      padding: 0;
+      gap: 0;
+    }
+    .left-col { padding: 10px 14px; }
+    .right-col {
+      background: #F6F4ED;
+      border-left: 1px solid #e0dbd5;
+      padding: 10px 12px;
+      overflow: visible;
+    }
+    .slider-row {
+      display: grid;
+      grid-template-columns: 90px 1fr 90px;
+      gap: 12px;
+    }
+    .intro-text { margin-bottom: 4px; font-size: 9px; }
+    .intro-title { font-size: 13px; }
+    .slider-dim-title { font-size: 10px; margin-bottom: 1px; }
+    .desc-left, .desc-right { font-size: 8px; text-align: center; line-height: 1.3; }
+
+    .custom-slider { display: none; }
+    .print-slider {
+      display: block;
+      position: relative;
+      height: 14px;
+    }
+    .print-slider .ps-track {
+      position: absolute;
+      top: 50%; left: 8px; right: 8px;
+      height: 2px;
+      background: #ccc;
+      transform: translateY(-50%);
+    }
+    .print-slider .ps-fill {
+      position: absolute;
+      top: 50%; left: 8px;
+      height: 2px;
+      background: #350944;
+      transform: translateY(-50%);
+    }
+    .print-slider .ps-dot {
+      position: absolute;
+      top: 50%;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #350944;
+      margin-top: -7px;
+      text-align: center;
+      line-height: 14px;
+      color: #D2F7A9;
+      font-size: 7px;
+      font-weight: bold;
+    }
+
+    .maturity-title { font-size: 12px; margin-bottom: 2px; }
+    .maturity-desc { font-size: 9px; margin-bottom: 2px; }
+    .score-display { margin-bottom: 3px; }
+    .score-number { font-size: 24px; }
+    .score-label { font-size: 7px; }
+    .level-item { padding: 3px 6px; }
+    .level-item .level-num { font-size: 10px; }
+    .level-item .level-name { font-size: 8.5px; }
+    .levels-area { gap: 2px; }
+    .header { padding: 6px 14px; }
+    .header h1 { font-size: 13px; }
+
+    .level-detail { display: none; }
+
+    .level-summary {
+      display: block;
+      padding: 12px 14px;
+      border-top: 2px solid #350944;
+      page-break-inside: avoid;
+    }
+    .level-summary h3 {
+      font-family: Garamond, 'Times New Roman', serif;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 4px;
+      color: #350944;
+    }
+    .level-summary p { font-size: 12px; line-height: 1.5; color: #333; }
+
+    .screen-footer { display: none; }
+    .print-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 14px;
+      border-top: 1px solid #ccc;
+      font-size: 12px;
+      color: #666;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .cs-thumb, .cs-fill, .cs-tick.filled,
+    .level-item.active, .header, .right-col, .level-summary,
+    .ps-dot, .ps-fill, .ps-track {
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1 id="header-title"></h1>
+  <div class="header-actions">
+    <select class="lang-select" id="lang-select" aria-label="Language">
+      <option value="en-US">English (US)</option>
+      <option value="en-GB">English (UK)</option>
+      <option value="fr-FR">Français (FR)</option>
+      <option value="fr-CA">Français (CA)</option>
+      <option value="de">Deutsch</option>
+      <option value="es-419">Español (LatAm)</option>
+      <option value="es-ES">Español (España)</option>
+      <option value="pt-BR">Português (Brasil)</option>
+      <option value="pt-PT">Português (Portugal)</option>
+    </select>
+    <button class="header-btn" id="btn-reset"></button>
+    <button class="header-btn" id="btn-print"></button>
+  </div>
+</div>
+
+<div class="page">
+  <div class="left-col">
+    <div class="intro-title" id="intro-title"></div>
+    <div class="intro-text" id="intro-text"></div>
+    <div class="sliders-area">
+      <div class="slider-block">
+        <div class="slider-dim-title" id="dim-leadership"></div>
+        <div class="slider-row">
+          <div class="desc-left" id="dl-leadership"></div>
+          <div class="custom-slider" data-dim="leadership"><div class="cs-track"></div><div class="cs-fill"></div><div class="cs-ticks"><span class="cs-tick filled"></span><span class="cs-tick"></span><span class="cs-tick"></span><span class="cs-tick"></span><span class="cs-tick"></span></div><div class="cs-thumb"><span class="cs-val">1.0</span></div></div>
+          <div class="print-slider" data-dim="leadership"><div class="ps-track"></div><div class="ps-fill"></div><div class="ps-dot"></div></div>
+          <div class="desc-right" id="dr-leadership"></div>
+        </div>
+      </div>
+      <div class="slider-block">
+        <div class="slider-dim-title" id="dim-application"></div>
+        <div class="slider-row">
+          <div class="desc-left" id="dl-application"></div>
+          <div class="custom-slider" data-dim="application"><div class="cs-track"></div><div class="cs-fill"></div><div class="cs-ticks"><span class="cs-tick filled"></span><span class="cs-tick"></span><span class="cs-tick"></span><span class="cs-tick"></span><span class="cs-tick"></span></div><div class="cs-thumb"><span class="cs-val">1.0</span></div></div>
+          <div class="print-slider" data-dim="application"><div class="ps-track"></div><div class="ps-fill"></div><div class="ps-dot"></div></div>
+          <div class="desc-right" id="dr-application"></div>
+        </div>
+      </div>
+      <div class="slider-block">
+        <div class="slider-dim-title" id="dim-competencies"></div>
+        <div class="slider-row">
+          <div class="desc-left" id="dl-competencies"></div>
+          <div class="custom-slider" data-dim="competencies"><div class="cs-track"></div><div class="cs-fill"></div><div class="cs-ticks"><span class="cs-tick filled"></span><span class="cs-tick"></span><span class="cs-tick"></span><span class="cs-tick"></span><span class="cs-tick"></span></div><div class="cs-thumb"><span class="cs-val">1.0</span></div></div>
+          <div class="print-slider" data-dim="competencies"><div class="ps-track"></div><div class="ps-fill"></div><div class="ps-dot"></div></div>
+          <div class="desc-right" id="dr-competencies"></div>
+        </div>
+      </div>
+      <div class="slider-block">
+        <div class="slider-dim-title" id="dim-standardization"></div>
+        <div class="slider-row">
+          <div class="desc-left" id="dl-standardization"></div>
+          <div class="custom-slider" data-dim="standardization"><div class="cs-track"></div><div class="cs-fill"></div><div class="cs-ticks"><span class="cs-tick filled"></span><span class="cs-tick"></span><span class="cs-tick"></span><span class="cs-tick"></span><span class="cs-tick"></span></div><div class="cs-thumb"><span class="cs-val">1.0</span></div></div>
+          <div class="print-slider" data-dim="standardization"><div class="ps-track"></div><div class="ps-fill"></div><div class="ps-dot"></div></div>
+          <div class="desc-right" id="dr-standardization"></div>
+        </div>
+      </div>
+      <div class="slider-block">
+        <div class="slider-dim-title" id="dim-socialization"></div>
+        <div class="slider-row">
+          <div class="desc-left" id="dl-socialization"></div>
+          <div class="custom-slider" data-dim="socialization"><div class="cs-track"></div><div class="cs-fill"></div><div class="cs-ticks"><span class="cs-tick filled"></span><span class="cs-tick"></span><span class="cs-tick"></span><span class="cs-tick"></span><span class="cs-tick"></span></div><div class="cs-thumb"><span class="cs-val">1.0</span></div></div>
+          <div class="print-slider" data-dim="socialization"><div class="ps-track"></div><div class="ps-fill"></div><div class="ps-dot"></div></div>
+          <div class="desc-right" id="dr-socialization"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-col">
+    <div class="maturity-title" id="maturity-title"></div>
+    <div class="maturity-desc" id="maturity-desc"></div>
+    <div class="score-display">
+      <div class="score-number" id="avg-score">1.0</div>
+      <div class="score-label" id="score-label"></div>
+    </div>
+    <div class="levels-area">
+      <div><div class="level-item" id="lv-5"><div class="level-text"><span class="level-num" id="lnum-5"></span><span class="level-name" id="lname-5"></span></div></div><div class="level-detail" id="detail-5"><p id="ldetail-5"></p></div></div>
+      <div><div class="level-item" id="lv-4"><div class="level-text"><span class="level-num" id="lnum-4"></span><span class="level-name" id="lname-4"></span></div></div><div class="level-detail" id="detail-4"><p id="ldetail-4"></p></div></div>
+      <div><div class="level-item" id="lv-3"><div class="level-text"><span class="level-num" id="lnum-3"></span><span class="level-name" id="lname-3"></span></div></div><div class="level-detail" id="detail-3"><p id="ldetail-3"></p></div></div>
+      <div><div class="level-item" id="lv-2"><div class="level-text"><span class="level-num" id="lnum-2"></span><span class="level-name" id="lname-2"></span></div></div><div class="level-detail" id="detail-2"><p id="ldetail-2"></p></div></div>
+      <div><div class="level-item active" id="lv-1"><div class="level-text"><span class="level-num" id="lnum-1"></span><span class="level-name" id="lname-1"></span></div></div><div class="level-detail open" id="detail-1"><p id="ldetail-1"></p></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="level-summary" id="level-summary"><h3 id="summary-title"></h3><p id="summary-text"></p></div>
+<div class="screen-footer"></div>
+<div class="print-footer"><span>www.prosci.com</span><span id="print-contact"></span><span id="assessment-date"></span></div>
+
+<script>
+var STRINGS = {
+  "en-US": {
+    htmlLang:"en", headerTitle:"Prosci Change Management Maturity Model \u2014 Quick Assessment",
+    btnReset:"Reset", btnPrint:"Print / PDF", introTitle:"The Quick Assessment",
+    introText:"The purpose of this tool is to promote early conversations about organizational change management maturity. Move each slider below to evaluate your organization\u2019s change management maturity across the following five capability areas. Use the discussion to determine your next steps. For any additional questions, please reach out to solutions@prosci.com.",
+    maturityTitle:"Maturity Level Estimate", maturityDesc:"Based on your average score, your estimated change management maturity level is:",
+    scoreLabel:"Average Score", printContact:"For more info: solutions@prosci.com", assessmentDateLabel:"Date of Assessment:", levelPrefix:"Level",
+    dims:{
+      leadership:{title:"Leadership",left:"Vision, sponsorship, and resources for enterprise change management are not evident.",right:"Vision, sponsorship, and resources for enterprise change management are fully evident."},
+      application:{title:"Application",left:"The application of change management processes and tools across the organization is not evident.",right:"The application of change management processes and tools across the organization is fully evident."},
+      competencies:{title:"Competencies",left:"The change management competencies across the organization are not evident.",right:"The change management competencies across the organization are fully evident."},
+      standardization:{title:"Standardization",left:"The standardization of change management processes, policies, tools, roles, et cetera, is not evident.",right:"The standardization of change management processes, policies, tools, roles, et cetera, is fully evident."},
+      socialization:{title:"Socialization",left:"The socialization of change management across the organization is not evident.",right:"The socialization of change management across the organization is fully evident."}
+    },
+    levels:[
+      {name:"Ad Hoc or Absent Change Management",detail:"At this level, project teams are not aware of change management and do not apply it as a formal approach. Change management is only used reactively, as a last resort when employee resistance jeopardizes project success. Communications are infrequent, executive support is limited to funding authorization, and people managers lack the information and skills to coach employees through change. Employees often learn about changes through rumors, leading to surprise, resistance, productivity loss, and increased turnover. To advance, the organization should invest in change management training, tools, and resources, and begin applying change management to isolated projects."},
+      {name:"Change Management on Isolated Projects",detail:"At this level, elements of change management begin to emerge in isolated parts of the organization. The effort to manage the people side of change is infrequent and not centralized. There is a large variation in practices between projects, with some using change management effectively while others have none. Change management is typically applied in response to a negative event, and little interaction occurs between isolated project teams \u2014 each new project re-learns basic skills. To advance, the organization should create knowledge-sharing across initiatives, begin collecting tools and best practices, and build executive support for applying change management across multiple projects."},
+      {name:"Change Management on Multiple Projects",detail:"At this level, multiple projects use structured change management processes, though approaches and methodologies may differ across teams. Knowledge sharing begins to emerge between groups, and senior leadership takes a more active role in sponsoring change. However, no organizational standards or requirements exist \u2014 pockets of excellence coexist with projects that use no change management. Training and tools become available to project leaders and people managers. To advance, the organization should enlist executive support for applying change management on every project and select a common methodology for enterprise-wide deployment."},
+      {name:"Organizational Change Management Standards",detail:"At this level, the organization has selected a common approach and implemented standards for using change management on every new project. There is enterprise-wide acknowledgement of what change management is and why it matters. Executives, project teams, and people managers have access to formal training and tools. Dedicated positions support change management efforts. Executives assume sponsorship roles on every project, and change management is integrated from the planning phase. Adoption is not yet at 100%, and the organization is still building skills throughout. To advance, the organization should create a formal group responsible for effective deployment and address gaps where the methodology is not yet applied."},
+      {name:"Organizational Competency",detail:"At this level, change management competency is part of the skill set of the organization. Effective change management is an explicitly stated strategic goal, and employees across the enterprise understand their role in making change successful. Change management is second nature \u2014 so commonplace that it is nearly inseparable from initiatives. People managers routinely use change management techniques across a broad range of efforts. The organization gathers data to enable continuous improvement of its methodology, tools, and training. Extensive training exists at all levels, resulting in higher ROI, lower productivity loss, and less employee resistance across the organization."}
+    ]
+  },
+  "en-GB": {
+    htmlLang:"en-GB", headerTitle:"Prosci Change Management Maturity Model \u2014 Quick Assessment",
+    btnReset:"Reset", btnPrint:"Print / PDF", introTitle:"The Quick Assessment",
+    introText:"The purpose of this tool is to promote early conversations about organisational change management maturity. Move each slider below to evaluate your organisation\u2019s change management maturity across the following five capability areas. Use the discussion to determine your next steps. For any additional questions, please reach out to solutions@prosci.com.",
+    maturityTitle:"Maturity Level Estimate", maturityDesc:"Based on your average score, your estimated change management maturity level is:",
+    scoreLabel:"Average Score", printContact:"For more info: solutions@prosci.com", assessmentDateLabel:"Date of Assessment:", levelPrefix:"Level",
+    dims:{
+      leadership:{title:"Leadership",left:"Vision, sponsorship, and resources for enterprise change management are not evident.",right:"Vision, sponsorship, and resources for enterprise change management are fully evident."},
+      application:{title:"Application",left:"The application of change management processes and tools across the organisation is not evident.",right:"The application of change management processes and tools across the organisation is fully evident."},
+      competencies:{title:"Competencies",left:"The change management competencies across the organisation are not evident.",right:"The change management competencies across the organisation are fully evident."},
+      standardization:{title:"Standardisation",left:"The standardisation of change management processes, policies, tools, roles, et cetera, is not evident.",right:"The standardisation of change management processes, policies, tools, roles, et cetera, is fully evident."},
+      socialization:{title:"Socialisation",left:"The socialisation of change management across the organisation is not evident.",right:"The socialisation of change management across the organisation is fully evident."}
+    },
+    levels:[
+      {name:"Ad Hoc or Absent Change Management",detail:"At this level, project teams are not aware of change management and do not apply it as a formal approach. Change management is only used reactively, as a last resort when employee resistance jeopardises project success. Communications are infrequent, executive support is limited to funding authorisation, and people managers lack the information and skills to coach employees through change. Employees often learn about changes through rumours, leading to surprise, resistance, productivity loss, and increased turnover. To advance, the organisation should invest in change management training, tools, and resources, and begin applying change management to isolated projects."},
+      {name:"Change Management on Isolated Projects",detail:"At this level, elements of change management begin to emerge in isolated parts of the organisation. The effort to manage the people side of change is infrequent and not centralised. There is a large variation in practices between projects, with some using change management effectively whilst others have none. Change management is typically applied in response to a negative event, and little interaction occurs between isolated project teams \u2014 each new project re-learns basic skills. To advance, the organisation should create knowledge-sharing across initiatives, begin collecting tools and best practices, and build executive support for applying change management across multiple projects."},
+      {name:"Change Management on Multiple Projects",detail:"At this level, multiple projects use structured change management processes, though approaches and methodologies may differ across teams. Knowledge sharing begins to emerge between groups, and senior leadership takes a more active role in sponsoring change. However, no organisational standards or requirements exist \u2014 pockets of excellence coexist with projects that use no change management. Training and tools become available to project leaders and people managers. To advance, the organisation should enlist executive support for applying change management on every project and select a common methodology for enterprise-wide deployment."},
+      {name:"Organisational Change Management Standards",detail:"At this level, the organisation has selected a common approach and implemented standards for using change management on every new project. There is enterprise-wide acknowledgement of what change management is and why it matters. Executives, project teams, and people managers have access to formal training and tools. Dedicated positions support change management efforts. Executives assume sponsorship roles on every project, and change management is integrated from the planning phase. Adoption is not yet at 100%, and the organisation is still building skills throughout. To advance, the organisation should create a formal group responsible for effective deployment and address gaps where the methodology is not yet applied."},
+      {name:"Organisational Competency",detail:"At this level, change management competency is part of the skill set of the organisation. Effective change management is an explicitly stated strategic goal, and employees across the enterprise understand their role in making change successful. Change management is second nature \u2014 so commonplace that it is nearly inseparable from initiatives. People managers routinely use change management techniques across a broad range of efforts. The organisation gathers data to enable continuous improvement of its methodology, tools, and training. Extensive training exists at all levels, resulting in higher ROI, lower productivity loss, and less employee resistance across the organisation."}
+    ]
+  },
+  "fr-FR": {
+    htmlLang:"fr", headerTitle:"Mod\u00e8le de maturit\u00e9 en gestion du changement Prosci \u2014 \u00c9valuation rapide",
+    btnReset:"R\u00e9initialiser", btnPrint:"Imprimer / PDF", introTitle:"L\u2019\u00e9valuation rapide",
+    introText:"Cet outil a pour but de favoriser des \u00e9changes pr\u00e9coces sur la maturit\u00e9 de la gestion du changement organisationnel. D\u00e9placez chaque curseur ci-dessous pour \u00e9valuer la maturit\u00e9 de votre organisation dans les cinq domaines de capacit\u00e9 suivants. Utilisez les r\u00e9sultats pour d\u00e9terminer vos prochaines \u00e9tapes. Pour toute question, contactez solutions@prosci.com.",
+    maturityTitle:"Estimation du niveau de maturit\u00e9", maturityDesc:"Sur la base de votre score moyen, votre niveau estim\u00e9 de maturit\u00e9 en gestion du changement est :",
+    scoreLabel:"Score moyen", printContact:"Pour plus d\u2019informations : solutions@prosci.com", assessmentDateLabel:"Date d\u2019\u00e9valuation :", levelPrefix:"Niveau",
+    dims:{
+      leadership:{title:"Leadership",left:"La vision, le parrainage et les ressources pour la gestion du changement \u00e0 l\u2019\u00e9chelle de l\u2019entreprise ne sont pas manifestes.",right:"La vision, le parrainage et les ressources pour la gestion du changement \u00e0 l\u2019\u00e9chelle de l\u2019entreprise sont pleinement manifestes."},
+      application:{title:"Application",left:"L\u2019application des processus et outils de gestion du changement au sein de l\u2019organisation n\u2019est pas manifeste.",right:"L\u2019application des processus et outils de gestion du changement au sein de l\u2019organisation est pleinement manifeste."},
+      competencies:{title:"Comp\u00e9tences",left:"Les comp\u00e9tences en gestion du changement au sein de l\u2019organisation ne sont pas manifestes.",right:"Les comp\u00e9tences en gestion du changement au sein de l\u2019organisation sont pleinement manifestes."},
+      standardization:{title:"Standardisation",left:"La standardisation des processus, politiques, outils et r\u00f4les de gestion du changement n\u2019est pas manifeste.",right:"La standardisation des processus, politiques, outils et r\u00f4les de gestion du changement est pleinement manifeste."},
+      socialization:{title:"Socialisation",left:"La socialisation de la gestion du changement au sein de l\u2019organisation n\u2019est pas manifeste.",right:"La socialisation de la gestion du changement au sein de l\u2019organisation est pleinement manifeste."}
+    },
+    levels:[
+      {name:"Gestion du changement ad hoc ou absente",detail:"À ce niveau, les \u00e9quipes projet ne connaissent pas la gestion du changement et ne l\u2019appliquent pas comme approche formelle. Elle n\u2019est utilis\u00e9e que de mani\u00e8re r\u00e9active, en dernier recours lorsque la r\u00e9sistance des employ\u00e9s compromet la r\u00e9ussite du projet. Les communications sont rares, le soutien des dirigeants se limite \u00e0 l\u2019autorisation de financement, et les managers manquent des informations et des comp\u00e9tences pour accompagner les employ\u00e9s dans le changement. Pour progresser, l\u2019organisation doit investir dans la formation et les outils de gestion du changement."},
+      {name:"Gestion du changement sur des projets isol\u00e9s",detail:"À ce niveau, des \u00e9l\u00e9ments de gestion du changement commencent \u00e0 \u00e9merger dans des parties isol\u00e9es de l\u2019organisation. L\u2019effort est irr\u00e9gulier et non centralis\u00e9. Les pratiques varient fortement d\u2019un projet \u00e0 l\u2019autre. Pour progresser, l\u2019organisation doit cr\u00e9er des \u00e9changes de savoirs entre initiatives et renforcer le soutien des dirigeants."},
+      {name:"Gestion du changement sur plusieurs projets",detail:"À ce niveau, plusieurs projets utilisent des processus structur\u00e9s de gestion du changement, m\u00eame si les approches peuvent diff\u00e9rer. Le partage des connaissances commence \u00e0 \u00e9merger entre les groupes. Cependant, aucune norme organisationnelle n\u2019existe encore. Pour progresser, l\u2019organisation doit obtenir le soutien des dirigeants et choisir une m\u00e9thodologie commune."},
+      {name:"Normes organisationnelles de gestion du changement",detail:"À ce niveau, l\u2019organisation a s\u00e9lectionn\u00e9 une approche commune et mis en place des normes pour tous les nouveaux projets. La gestion du changement est reconnue \u00e0 l\u2019\u00e9chelle de l\u2019entreprise. L\u2019adoption n\u2019est pas encore totale. Pour progresser, elle doit cr\u00e9er un groupe formel charg\u00e9 du d\u00e9ploiement efficace."},
+      {name:"Comp\u00e9tence organisationnelle",detail:"À ce niveau, la comp\u00e9tence en gestion du changement fait partie des aptitudes de l\u2019organisation. C\u2019est un objectif strat\u00e9gique explicitement formul\u00e9. La gestion du changement est naturelle \u2014 si courante qu\u2019elle est presque indissociable des initiatives. L\u2019organisation collecte des donn\u00e9es pour am\u00e9liorer continuellement sa m\u00e9thodologie, ses outils et sa formation."}
+    ]
+  },
+  "fr-CA": {
+    htmlLang:"fr-CA", headerTitle:"Mod\u00e8le de maturit\u00e9 en gestion du changement Prosci \u2014 \u00c9valuation rapide",
+    btnReset:"R\u00e9initialiser", btnPrint:"Imprimer / PDF", introTitle:"L\u2019\u00e9valuation rapide",
+    introText:"Cet outil vise \u00e0 favoriser des \u00e9changes pr\u00e9coces sur la maturit\u00e9 de la gestion du changement organisationnel. D\u00e9placez chaque curseur ci-dessous pour \u00e9valuer la maturit\u00e9 de votre organisation dans les cinq domaines de capacit\u00e9 suivants. Pour toute question, communiquez avec solutions@prosci.com.",
+    maturityTitle:"Estimation du niveau de maturit\u00e9", maturityDesc:"En fonction de votre score moyen, votre niveau estim\u00e9 de maturit\u00e9 en gestion du changement est :",
+    scoreLabel:"Score moyen", printContact:"Pour plus d\u2019informations : solutions@prosci.com", assessmentDateLabel:"Date d\u2019\u00e9valuation :", levelPrefix:"Niveau",
+    dims:{
+      leadership:{title:"Leadership",left:"La vision, le parrainage et les ressources pour la gestion du changement \u00e0 l\u2019\u00e9chelle organisationnelle ne sont pas manifestes.",right:"La vision, le parrainage et les ressources pour la gestion du changement \u00e0 l\u2019\u00e9chelle organisationnelle sont pleinement manifestes."},
+      application:{title:"Application",left:"L\u2019application des processus et outils de gestion du changement \u00e0 l\u2019\u00e9chelle de l\u2019organisation n\u2019est pas manifeste.",right:"L\u2019application des processus et outils de gestion du changement \u00e0 l\u2019\u00e9chelle de l\u2019organisation est pleinement manifeste."},
+      competencies:{title:"Comp\u00e9tences",left:"Les comp\u00e9tences en gestion du changement au sein de l\u2019organisation ne sont pas manifestes.",right:"Les comp\u00e9tences en gestion du changement au sein de l\u2019organisation sont pleinement manifestes."},
+      standardization:{title:"Standardisation",left:"La standardisation des processus, politiques, outils et r\u00f4les li\u00e9s \u00e0 la gestion du changement n\u2019est pas manifeste.",right:"La standardisation des processus, politiques, outils et r\u00f4les li\u00e9s \u00e0 la gestion du changement est pleinement manifeste."},
+      socialization:{title:"Socialisation",left:"La socialisation de la gestion du changement \u00e0 l\u2019\u00e9chelle de l\u2019organisation n\u2019est pas manifeste.",right:"La socialisation de la gestion du changement \u00e0 l\u2019\u00e9chelle de l\u2019organisation est pleinement manifeste."}
+    },
+    levels:[
+      {name:"Gestion du changement ad hoc ou absente",detail:"À ce niveau, les \u00e9quipes de projet ne connaissent pas la gestion du changement et ne l\u2019appliquent pas de fa\u00e7on formelle. Elle n\u2019est utilis\u00e9e qu\u2019en r\u00e9action, en dernier recours lorsque la r\u00e9sistance des employ\u00e9s compromet la r\u00e9ussite du projet. Pour progresser, l\u2019organisation doit investir dans la formation et les outils et commencer \u00e0 appliquer la gestion du changement \u00e0 des projets isol\u00e9s."},
+      {name:"Gestion du changement sur des projets isol\u00e9s",detail:"À ce niveau, des \u00e9l\u00e9ments de gestion du changement commencent \u00e0 \u00e9merger dans des parties isol\u00e9es de l\u2019organisation. Les efforts sont irr\u00e9guliers et non centralis\u00e9s. Pour progresser, l\u2019organisation doit cr\u00e9er des m\u00e9canismes de partage des connaissances et obtenir le soutien des dirigeants."},
+      {name:"Gestion du changement sur plusieurs projets",detail:"À ce niveau, plusieurs projets utilisent des processus structur\u00e9s, bien que les approches puissent diff\u00e9rer. Aucune norme organisationnelle n\u2019existe encore. Pour progresser, l\u2019organisation doit obtenir le soutien des dirigeants et choisir une m\u00e9thodologie commune."},
+      {name:"Normes organisationnelles de gestion du changement",detail:"À ce niveau, l\u2019organisation a adopt\u00e9 une approche commune et \u00e9tabli des normes pour chaque nouveau projet. L\u2019adoption n\u2019est pas encore totale. Pour progresser, elle doit cr\u00e9er un groupe formel responsable du d\u00e9ploiement efficace."},
+      {name:"Comp\u00e9tence organisationnelle",detail:"À ce niveau, la comp\u00e9tence en gestion du changement fait partie des aptitudes de l\u2019organisation. Elle est un objectif strat\u00e9gique explicitement formul\u00e9. La gestion du changement est devenue naturelle \u2014 pratiquement indissociable des initiatives. L\u2019organisation recueille des donn\u00e9es pour am\u00e9liorer continuellement sa m\u00e9thodologie."}
+    ]
+  },
+  "de": {
+    htmlLang:"de", headerTitle:"Prosci Reifegradmodell f\u00fcr Change Management \u2014 Schnellbewertung",
+    btnReset:"Zur\u00fccksetzen", btnPrint:"Drucken / PDF", introTitle:"Die Schnellbewertung",
+    introText:"Dieses Tool soll fr\u00fche Gespr\u00e4che \u00fcber die Change-Management-Reife einer Organisation anregen. Verschieben Sie die Schieberegler, um die Reife Ihrer Organisation in den f\u00fcnf Kompetenzbereichen zu bewerten. Bei weiteren Fragen wenden Sie sich bitte an solutions@prosci.com.",
+    maturityTitle:"Gesch\u00e4tzter Reifegrad", maturityDesc:"Basierend auf Ihrem Durchschnittswert betr\u00e4gt Ihr gesch\u00e4tzter Change-Management-Reifegrad:",
+    scoreLabel:"Durchschnittswert", printContact:"Weitere Informationen: solutions@prosci.com", assessmentDateLabel:"Bewertungsdatum:", levelPrefix:"Stufe",
+    dims:{
+      leadership:{title:"Leadership",left:"Vision, Sponsoring und Ressourcen f\u00fcr unternehmensweites Change Management sind nicht erkennbar.",right:"Vision, Sponsoring und Ressourcen f\u00fcr unternehmensweites Change Management sind vollst\u00e4ndig erkennbar."},
+      application:{title:"Anwendung",left:"Die Anwendung von Change-Management-Prozessen und -Tools in der Organisation ist nicht erkennbar.",right:"Die Anwendung von Change-Management-Prozessen und -Tools in der Organisation ist vollst\u00e4ndig erkennbar."},
+      competencies:{title:"Kompetenzen",left:"Die Change-Management-Kompetenzen in der Organisation sind nicht erkennbar.",right:"Die Change-Management-Kompetenzen in der Organisation sind vollst\u00e4ndig erkennbar."},
+      standardization:{title:"Standardisierung",left:"Die Standardisierung von Change-Management-Prozessen, Richtlinien, Tools und Rollen ist nicht erkennbar.",right:"Die Standardisierung von Change-Management-Prozessen, Richtlinien, Tools und Rollen ist vollst\u00e4ndig erkennbar."},
+      socialization:{title:"Verankerung",left:"Die Verankerung von Change Management in der Organisation ist nicht erkennbar.",right:"Die Verankerung von Change Management in der Organisation ist vollst\u00e4ndig erkennbar."}
+    },
+    levels:[
+      {name:"Ad-hoc oder kein Change Management",detail:"Auf dieser Stufe sind sich die Projektteams nicht bewusst, was Change Management ist, und wenden es nicht als formalen Ansatz an. Es wird nur reaktiv eingesetzt, als letztes Mittel, wenn Widerstand der Mitarbeitenden den Projekterfolg gef\u00e4hrdet. Um voranzukommen, sollte die Organisation in Schulungen, Tools und Ressourcen investieren."},
+      {name:"Change Management in Einzelprojekten",detail:"Auf dieser Stufe beginnen Elemente des Change Managements in isolierten Teilen der Organisation aufzutauchen. Der Aufwand ist unregelm\u00e4\u00dfig und nicht zentralisiert. Um voranzukommen, sollte die Organisation Wissensaustausch schaffen und die Unterst\u00fctzung der F\u00fchrungsebene gewinnen."},
+      {name:"Change Management in mehreren Projekten",detail:"Auf dieser Stufe verwenden mehrere Projekte strukturierte Change-Management-Prozesse. Es fehlen jedoch noch organisationsweite Standards. Um voranzukommen, sollte die Organisation die F\u00fchrungsebene gewinnen und eine gemeinsame Methodik w\u00e4hlen."},
+      {name:"Organisationsweite Change-Management-Standards",detail:"Auf dieser Stufe hat die Organisation einen gemeinsamen Ansatz gew\u00e4hlt und Standards f\u00fcr alle neuen Projekte eingef\u00fchrt. Die Anwendung ist noch nicht vollst\u00e4ndig. Um voranzukommen, sollte die Organisation eine formale Gruppe schaffen, die f\u00fcr die effektive Einf\u00fchrung verantwortlich ist."},
+      {name:"Organisationale Kompetenz",detail:"Auf dieser Stufe ist Change-Management-Kompetenz Teil des F\u00e4higkeitensets der Organisation. Es ist ein explizit formuliertes strategisches Ziel. Change Management ist zur Selbstverst\u00e4ndlichkeit geworden \u2014 kaum von Initiativen zu trennen. Die Organisation erfasst Daten f\u00fcr kontinuierliche Verbesserungen."}
+    ]
+  },
+  "es-419": {
+    htmlLang:"es", headerTitle:"Modelo de Madurez en Gesti\u00f3n del Cambio de Prosci \u2014 Evaluaci\u00f3n R\u00e1pida",
+    btnReset:"Reiniciar", btnPrint:"Imprimir / PDF", introTitle:"La Evaluaci\u00f3n R\u00e1pida",
+    introText:"El prop\u00f3sito de esta herramienta es promover conversaciones tempranas sobre la madurez de la gesti\u00f3n del cambio organizacional. Mueva cada control deslizante para evaluar la madurez de su organizaci\u00f3n en las siguientes cinco \u00e1reas de capacidad. Para cualquier pregunta adicional, comun\u00edquese con solutions@prosci.com.",
+    maturityTitle:"Estimaci\u00f3n del Nivel de Madurez", maturityDesc:"Con base en su puntuaci\u00f3n promedio, su nivel estimado de madurez en gesti\u00f3n del cambio es:",
+    scoreLabel:"Puntuaci\u00f3n Promedio", printContact:"Para m\u00e1s informaci\u00f3n: solutions@prosci.com", assessmentDateLabel:"Fecha de evaluaci\u00f3n:", levelPrefix:"Nivel",
+    dims:{
+      leadership:{title:"Liderazgo",left:"La visi\u00f3n, el patrocinio y los recursos para la gesti\u00f3n del cambio a nivel empresarial no son evidentes.",right:"La visi\u00f3n, el patrocinio y los recursos para la gesti\u00f3n del cambio a nivel empresarial son plenamente evidentes."},
+      application:{title:"Aplicaci\u00f3n",left:"La aplicaci\u00f3n de procesos y herramientas de gesti\u00f3n del cambio en la organizaci\u00f3n no es evidente.",right:"La aplicaci\u00f3n de procesos y herramientas de gesti\u00f3n del cambio en la organizaci\u00f3n es plenamente evidente."},
+      competencies:{title:"Competencias",left:"Las competencias de gesti\u00f3n del cambio en la organizaci\u00f3n no son evidentes.",right:"Las competencias de gesti\u00f3n del cambio en la organizaci\u00f3n son plenamente evidentes."},
+      standardization:{title:"Estandarizaci\u00f3n",left:"La estandarizaci\u00f3n de procesos, pol\u00edticas, herramientas y roles de gesti\u00f3n del cambio no es evidente.",right:"La estandarizaci\u00f3n de procesos, pol\u00edticas, herramientas y roles de gesti\u00f3n del cambio es plenamente evidente."},
+      socialization:{title:"Socializaci\u00f3n",left:"La socializaci\u00f3n de la gesti\u00f3n del cambio en la organizaci\u00f3n no es evidente.",right:"La socializaci\u00f3n de la gesti\u00f3n del cambio en la organizaci\u00f3n es plenamente evidente."}
+    },
+    levels:[
+      {name:"Gesti\u00f3n del Cambio Ad Hoc o Ausente",detail:"En este nivel, los equipos de proyecto no conocen la gesti\u00f3n del cambio y no la aplican como enfoque formal. Se usa \u00fanicamente de forma reactiva, como \u00faltimo recurso cuando la resistencia de los empleados pone en riesgo el \u00e9xito del proyecto. Para avanzar, la organizaci\u00f3n debe invertir en formaci\u00f3n y herramientas."},
+      {name:"Gesti\u00f3n del Cambio en Proyectos Aislados",detail:"En este nivel, elementos de la gesti\u00f3n del cambio comienzan a emerger en partes aisladas de la organizaci\u00f3n. El esfuerzo es irregular y no est\u00e1 centralizado. Para avanzar, la organizaci\u00f3n debe crear mecanismos de intercambio de conocimientos y construir apoyo ejecutivo."},
+      {name:"Gesti\u00f3n del Cambio en M\u00faltiples Proyectos",detail:"En este nivel, m\u00faltiples proyectos utilizan procesos estructurados de gesti\u00f3n del cambio, aunque los enfoques pueden variar. A\u00fan no existen normas organizacionales. Para avanzar, la organizaci\u00f3n debe obtener el respaldo ejecutivo y seleccionar una metodolog\u00eda com\u00fan."},
+      {name:"Est\u00e1ndares Organizacionales de Gesti\u00f3n del Cambio",detail:"En este nivel, la organizaci\u00f3n ha adoptado un enfoque com\u00fan e implementado est\u00e1ndares para todos los nuevos proyectos. La adopci\u00f3n a\u00fan no es total. Para avanzar, debe crear un grupo formal responsable del despliegue efectivo."},
+      {name:"Competencia Organizacional",detail:"En este nivel, la competencia en gesti\u00f3n del cambio forma parte del conjunto de habilidades de la organizaci\u00f3n. Es un objetivo estrat\u00e9gico expl\u00edcitamente declarado. La gesti\u00f3n del cambio es algo natural \u2014 tan com\u00fan que es casi inseparable de las iniciativas. La organizaci\u00f3n recopila datos para mejorar continuamente su metodolog\u00eda."}
+    ]
+  },
+  "es-ES": {
+    htmlLang:"es", headerTitle:"Modelo de Madurez en Gesti\u00f3n del Cambio de Prosci \u2014 Evaluaci\u00f3n R\u00e1pida",
+    btnReset:"Reiniciar", btnPrint:"Imprimir / PDF", introTitle:"La Evaluaci\u00f3n R\u00e1pida",
+    introText:"El prop\u00f3sito de esta herramienta es promover conversaciones tempranas sobre la madurez de la gesti\u00f3n del cambio organizacional. Mueva cada control deslizante para evaluar la madurez de su organizaci\u00f3n en las siguientes cinco \u00e1reas de capacidad. Para cualquier consulta adicional, p\u00f3ngase en contacto con solutions@prosci.com.",
+    maturityTitle:"Estimaci\u00f3n del Nivel de Madurez", maturityDesc:"En funci\u00f3n de su puntuaci\u00f3n media, su nivel estimado de madurez en gesti\u00f3n del cambio es:",
+    scoreLabel:"Puntuaci\u00f3n Media", printContact:"Para m\u00e1s informaci\u00f3n: solutions@prosci.com", assessmentDateLabel:"Fecha de evaluaci\u00f3n:", levelPrefix:"Nivel",
+    dims:{
+      leadership:{title:"Liderazgo",left:"La visi\u00f3n, el patrocinio y los recursos para la gesti\u00f3n del cambio a nivel empresarial no son evidentes.",right:"La visi\u00f3n, el patrocinio y los recursos para la gesti\u00f3n del cambio a nivel empresarial son plenamente evidentes."},
+      application:{title:"Aplicaci\u00f3n",left:"La aplicaci\u00f3n de procesos y herramientas de gesti\u00f3n del cambio en la organizaci\u00f3n no es evidente.",right:"La aplicaci\u00f3n de procesos y herramientas de gesti\u00f3n del cambio en la organizaci\u00f3n es plenamente evidente."},
+      competencies:{title:"Competencias",left:"Las competencias de gesti\u00f3n del cambio en la organizaci\u00f3n no son evidentes.",right:"Las competencias de gesti\u00f3n del cambio en la organizaci\u00f3n son plenamente evidentes."},
+      standardization:{title:"Estandarizaci\u00f3n",left:"La estandarizaci\u00f3n de procesos, pol\u00edticas, herramientas y roles de gesti\u00f3n del cambio no es evidente.",right:"La estandarizaci\u00f3n de procesos, pol\u00edticas, herramientas y roles de gesti\u00f3n del cambio es plenamente evidente."},
+      socialization:{title:"Socializaci\u00f3n",left:"La socializaci\u00f3n de la gesti\u00f3n del cambio en la organizaci\u00f3n no es evidente.",right:"La socializaci\u00f3n de la gesti\u00f3n del cambio en la organizaci\u00f3n es plenamente evidente."}
+    },
+    levels:[
+      {name:"Gesti\u00f3n del Cambio Ad Hoc o Ausente",detail:"En este nivel, los equipos de proyecto no conocen la gesti\u00f3n del cambio y no la aplican como enfoque formal. Se emplea \u00fanicamente de forma reactiva, como \u00faltimo recurso. Para avanzar, la organizaci\u00f3n debe invertir en formaci\u00f3n y herramientas."},
+      {name:"Gesti\u00f3n del Cambio en Proyectos Aislados",detail:"En este nivel, elementos de la gesti\u00f3n del cambio comienzan a emerger en partes aisladas de la organizaci\u00f3n. El esfuerzo es irregular y no est\u00e1 centralizado. Para avanzar, debe crear mecanismos de intercambio de conocimientos y obtener apoyo directivo."},
+      {name:"Gesti\u00f3n del Cambio en M\u00faltiples Proyectos",detail:"En este nivel, m\u00faltiples proyectos utilizan procesos estructurados, aunque los enfoques pueden variar. A\u00fan no existen normas organizacionales. Para avanzar, debe obtener el apoyo directivo y seleccionar una metodolog\u00eda com\u00fan."},
+      {name:"Est\u00e1ndares Organizacionales de Gesti\u00f3n del Cambio",detail:"En este nivel, la organizaci\u00f3n ha adoptado un enfoque com\u00fan e implantado est\u00e1ndares para todos los nuevos proyectos. La adopci\u00f3n a\u00fan no es total. Para avanzar, debe crear un grupo formal responsable del despliegue efectivo."},
+      {name:"Competencia Organizacional",detail:"En este nivel, la competencia en gesti\u00f3n del cambio forma parte del conjunto de habilidades de la organizaci\u00f3n. Es un objetivo estrat\u00e9gico expl\u00edcitamente declarado. La gesti\u00f3n del cambio es tan habitual que resulta casi inseparable de las iniciativas."}
+    ]
+  }
+  ,"pt-BR": {
+    htmlLang:"pt-BR", headerTitle:"Modelo de Maturidade em Gestão de Mudanças da Prosci — Avaliação Rápida",
+    btnReset:"Redefinir", btnPrint:"Imprimir / PDF", introTitle:"A Avaliação Rápida",
+    introText:"O objetivo desta ferramenta é promover conversas iniciais sobre a maturidade da gestão de mudanças organizacional. Mova cada controle deslizante abaixo para avaliar a maturidade da sua organização nas cinco áreas de capacidade a seguir. Use os resultados para determinar seus próximos passos. Para qualquer dúvida adicional, entre em contato com solutions@prosci.com.",
+    maturityTitle:"Estimativa do Nível de Maturidade", maturityDesc:"Com base na sua pontuação média, seu nível estimado de maturidade em gestão de mudanças é:",
+    scoreLabel:"Pontuação Média", printContact:"Para mais informações: solutions@prosci.com", assessmentDateLabel:"Data da avaliação:", levelPrefix:"Nível",
+    dims:{
+      leadership:{title:"Liderança",left:"A visão, o patrocínio e os recursos para a gestão de mudanças empresarial não são evidentes.",right:"A visão, o patrocínio e os recursos para a gestão de mudanças empresarial são plenamente evidentes."},
+      application:{title:"Aplicação",left:"A aplicação de processos e ferramentas de gestão de mudanças na organização não é evidente.",right:"A aplicação de processos e ferramentas de gestão de mudanças na organização é plenamente evidente."},
+      competencies:{title:"Competências",left:"As competências de gestão de mudanças na organização não são evidentes.",right:"As competências de gestão de mudanças na organização são plenamente evidentes."},
+      standardization:{title:"Padronização",left:"A padronização de processos, políticas, ferramentas e funções de gestão de mudanças não é evidente.",right:"A padronização de processos, políticas, ferramentas e funções de gestão de mudanças é plenamente evidente."},
+      socialization:{title:"Socialização",left:"A socialização da gestão de mudanças na organização não é evidente.",right:"A socialização da gestão de mudanças na organização é plenamente evidente."}
+    },
+    levels:[
+      {name:"Gestão de Mudanças Ad Hoc ou Ausente",detail:"Neste nível, as equipes de projeto não conhecem a gestão de mudanças e não a aplicam como abordagem formal. Ela é usada apenas de forma reativa, como último recurso quando a resistência dos colaboradores compromete o sucesso do projeto. As comunicações são escassas, o apoio executivo se limita à autorização orçamentária, e os gestores carecem de informações e habilidades para orientar os colaboradores. Os colaboradores frequentemente ficam sabendo das mudanças por meio de rumores, gerando surpresa, resistência, queda de produtividade e aumento da rotatividade. Para avançar, a organização deve investir em treinamento e ferramentas de gestão de mudanças e começar a aplicá-la em projetos isolados."},
+      {name:"Gestão de Mudanças em Projetos Isolados",detail:"Neste nível, elementos da gestão de mudanças começam a surgir em partes isoladas da organização. O esforço é irregular e não centralizado. Há grande variação nas práticas entre projetos. A gestão de mudanças geralmente é aplicada em resposta a um evento negativo, e as equipes isoladas interagem pouco entre si — cada novo projeto reaprendendo as habilidades básicas. Para avançar, a organização deve criar mecanismos de compartilhamento de conhecimento, coletar ferramentas e boas práticas, e construir apoio executivo para aplicar a gestão de mudanças em múltiplos projetos."},
+      {name:"Gestão de Mudanças em Múltiplos Projetos",detail:"Neste nível, múltiplos projetos utilizam processos estruturados de gestão de mudanças, embora as abordagens possam variar. O compartilhamento de conhecimento começa a surgir entre grupos e a liderança sênior assume um papel mais ativo. No entanto, ainda não existem padrões organizacionais. Para avançar, a organização deve obter o apoio executivo para aplicar a gestão de mudanças em todos os projetos e selecionar uma metodologia comum para implantação em toda a empresa."},
+      {name:"Padrões Organizacionais de Gestão de Mudanças",detail:"Neste nível, a organização adotou uma abordagem comum e implementou padrões para todos os novos projetos. A gestão de mudanças é reconhecida em toda a empresa. Executivos, equipes de projeto e gestores têm acesso a treinamento e ferramentas formais. Posições dedicadas apoiam os esforços. A adoção ainda não é total. Para avançar, a organização deve criar um grupo formal responsável pela implantação eficaz e abordar lacunas onde a metodologia ainda não é aplicada."},
+      {name:"Competência Organizacional",detail:"Neste nível, a competência em gestão de mudanças faz parte do conjunto de habilidades da organização. É um objetivo estratégico explicitamente declarado, e os colaboradores entendem seu papel no sucesso das mudanças. A gestão de mudanças é algo natural — tão comum que é quase inseparável das iniciativas. A organização coleta dados para melhorar continuamente sua metodologia, ferramentas e treinamento, resultando em maior ROI, menor perda de produtividade e menos resistência."}
+    ]
+  }
+  ,"pt-PT": {
+    htmlLang:"pt-PT", headerTitle:"Modelo de Maturidade em Gestão da Mudança da Prosci — Avaliação Rápida",
+    btnReset:"Repor", btnPrint:"Imprimir / PDF", introTitle:"A Avaliação Rápida",
+    introText:"O objetivo desta ferramenta é promover conversas iniciais sobre a maturidade da gestão da mudança organizacional. Mova cada cursor abaixo para avaliar a maturidade da sua organização nas cinco áreas de capacidade seguintes. Utilize os resultados para determinar os próximos passos. Para qualquer questão adicional, contacte solutions@prosci.com.",
+    maturityTitle:"Estimativa do Nível de Maturidade", maturityDesc:"Com base na sua pontuação média, o seu nível estimado de maturidade em gestão da mudança é:",
+    scoreLabel:"Pontuação Média", printContact:"Para mais informações: solutions@prosci.com", assessmentDateLabel:"Data da avaliação:", levelPrefix:"Nível",
+    dims:{
+      leadership:{title:"Liderança",left:"A visão, o patrocínio e os recursos para a gestão da mudança empresarial não são evidentes.",right:"A visão, o patrocínio e os recursos para a gestão da mudança empresarial são plenamente evidentes."},
+      application:{title:"Aplicação",left:"A aplicação de processos e ferramentas de gestão da mudança na organização não é evidente.",right:"A aplicação de processos e ferramentas de gestão da mudança na organização é plenamente evidente."},
+      competencies:{title:"Competências",left:"As competências de gestão da mudança na organização não são evidentes.",right:"As competências de gestão da mudança na organização são plenamente evidentes."},
+      standardization:{title:"Normalização",left:"A normalização de processos, políticas, ferramentas e funções de gestão da mudança não é evidente.",right:"A normalização de processos, políticas, ferramentas e funções de gestão da mudança é plenamente evidente."},
+      socialization:{title:"Socialização",left:"A socialização da gestão da mudança na organização não é evidente.",right:"A socialização da gestão da mudança na organização é plenamente evidente."}
+    },
+    levels:[
+      {name:"Gestão da Mudança Ad Hoc ou Ausente",detail:"Neste nível, as equipas de projeto não conhecem a gestão da mudança e não a aplicam como abordagem formal. É utilizada apenas de forma reativa, como último recurso quando a resistência dos colaboradores compromete o sucesso do projeto. As comunicações são escassas, o apoio executivo limita-se à autorização orçamental, e os gestores carecem de informação e competências para orientar os colaboradores. Os colaboradores ficam frequentemente a saber das mudanças por rumores, gerando surpresa, resistência, quebra de produtividade e aumento da rotatividade. Para avançar, a organização deve investir em formação e ferramentas de gestão da mudança e começar a aplicá-la em projetos isolados."},
+      {name:"Gestão da Mudança em Projetos Isolados",detail:"Neste nível, elementos da gestão da mudança começam a surgir em partes isoladas da organização. O esforço é irregular e não centralizado. Existe grande variação nas práticas entre projetos. A gestão da mudança é geralmente aplicada em resposta a um evento negativo, e as equipas isoladas interagem pouco entre si. Para avançar, a organização deve criar mecanismos de partilha de conhecimento, recolher ferramentas e boas práticas, e construir apoio executivo para aplicar a gestão da mudança em múltiplos projetos."},
+      {name:"Gestão da Mudança em Múltiplos Projetos",detail:"Neste nível, múltiplos projetos utilizam processos estruturados de gestão da mudança, embora as abordagens possam variar. A partilha de conhecimento começa a surgir entre grupos e a liderança sénior assume um papel mais ativo. Contudo, ainda não existem normas organizacionais. Para avançar, a organização deve obter o apoio executivo para aplicar a gestão da mudança em todos os projetos e selecionar uma metodologia comum para implementação em toda a empresa."},
+      {name:"Normas Organizacionais de Gestão da Mudança",detail:"Neste nível, a organização adotou uma abordagem comum e implementou normas para todos os novos projetos. A gestão da mudança é reconhecida em toda a empresa. Executivos, equipas de projeto e gestores têm acesso a formação e ferramentas formais. Posições dedicadas apoiam os esforços. A adoção ainda não é total. Para avançar, a organização deve criar um grupo formal responsável pela implementação eficaz e colmatar as lacunas onde a metodologia ainda não é aplicada."},
+      {name:"Competência Organizacional",detail:"Neste nível, a competência em gestão da mudança faz parte do conjunto de competências da organização. É um objetivo estratégico explicitamente declarado, e os colaboradores compreendem o seu papel no sucesso das mudanças. A gestão da mudança é algo natural — tão comum que é quase inseparável das iniciativas. A organização recolhe dados para melhorar continuamente a sua metodologia, ferramentas e formação, resultando em maior ROI, menor perda de produtividade e menos resistência."}
+    ]
+  }
+};
+
+var currentLang = "en-US";
+var values = {leadership:1, application:1, competencies:1, standardization:1, socialization:1};
+var thumbRadius = 18;
+
+function setLanguage(lang) {
+  currentLang = lang;
+  var s = STRINGS[lang];
+  document.documentElement.lang = s.htmlLang;
+  document.getElementById('header-title').textContent = s.headerTitle;
+  document.getElementById('btn-reset').textContent = s.btnReset;
+  document.getElementById('btn-print').textContent = s.btnPrint;
+  document.getElementById('intro-title').textContent = s.introTitle;
+  document.getElementById('intro-text').textContent = s.introText;
+  document.getElementById('maturity-title').textContent = s.maturityTitle;
+  document.getElementById('maturity-desc').textContent = s.maturityDesc;
+  document.getElementById('score-label').textContent = s.scoreLabel;
+  document.getElementById('print-contact').textContent = s.printContact;
+  var dims = ['leadership','application','competencies','standardization','socialization'];
+  dims.forEach(function(d) {
+    document.getElementById('dim-'+d).textContent = s.dims[d].title;
+    document.getElementById('dl-'+d).textContent = s.dims[d].left;
+    document.getElementById('dr-'+d).textContent = s.dims[d].right;
+  });
+  for (var i = 1; i <= 5; i++) {
+    var lvl = s.levels[i-1];
+    document.getElementById('lnum-'+i).textContent = s.levelPrefix + ' ' + i;
+    document.getElementById('lname-'+i).textContent = lvl.name;
+    document.getElementById('ldetail-'+i).textContent = lvl.detail;
+  }
+  var today = new Date();
+  var dateStr = today.toLocaleDateString(lang === 'en-US' ? 'en-US' : lang, {year:'numeric', month:'long', day:'numeric'});
+  document.getElementById('assessment-date').textContent = s.assessmentDateLabel + ' ' + dateStr;
+  updateResults();
+}
+
+function getSliderParts(slider) {
+  return {fill:slider.querySelector('.cs-fill'), thumb:slider.querySelector('.cs-thumb'), valEl:slider.querySelector('.cs-val'), ticks:slider.querySelectorAll('.cs-tick')};
+}
+
+function renderSlider(slider) {
+  var dim = slider.dataset.dim;
+  var val = values[dim];
+  var parts = getSliderParts(slider);
+  var w = slider.offsetWidth;
+  var usable = w - thumbRadius * 2;
+  var pos = thumbRadius + usable * ((val-1)/4);
+  parts.thumb.style.left = pos + 'px';
+  parts.fill.style.width = pos + 'px';
+  parts.valEl.textContent = val.toFixed(1);
+  parts.ticks.forEach(function(t,i){ t.classList.toggle('filled', i+1 <= val); });
+}
+
+function updateResults() {
+  var dims = Object.keys(values);
+  var total = dims.reduce(function(s,d){ return s + values[d]; }, 0);
+  var avg = total / dims.length;
+  document.getElementById('avg-score').textContent = (Math.round(avg*10)/10).toFixed(1);
+  var level = avg < 2 ? 1 : avg < 3 ? 2 : avg < 4 ? 3 : avg < 4.8 ? 4 : 5;
+  for (var i = 1; i <= 5; i++) {
+    document.getElementById('lv-'+i).classList.toggle('active', i === level);
+    document.getElementById('detail-'+i).classList.toggle('open', i === level);
+  }
+  var s = STRINGS[currentLang];
+  var lvl = s.levels[level-1];
+  document.getElementById('summary-title').textContent = s.levelPrefix + ' ' + level + ' \u2014 ' + lvl.name;
+  document.getElementById('summary-text').textContent = lvl.detail;
+}
+
+function valFromX(slider, clientX) {
+  var rect = slider.getBoundingClientRect();
+  var raw = (clientX - rect.left - thumbRadius) / (rect.width - thumbRadius * 2);
+  return Math.round((1 + Math.max(0, Math.min(1, raw)) * 4) * 10) / 10;
+}
+
+function updatePrintSliders() {
+  document.querySelectorAll('.print-slider').forEach(function(ps) {
+    var val = values[ps.dataset.dim];
+    var pct = (val-1)/4;
+    var trackW = ps.offsetWidth - 20;
+    ps.querySelector('.ps-fill').style.width = (10 + trackW * pct) + 'px';
+    var dot = ps.querySelector('.ps-dot');
+    dot.style.left = (10 + trackW * pct - 9) + 'px';
+    dot.textContent = val.toFixed(1);
+  });
+}
+
+document.querySelectorAll('.custom-slider').forEach(function(slider) {
+  var dragging = false;
+  function onMove(e) {
+    if (!dragging) return;
+    var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    values[slider.dataset.dim] = valFromX(slider, clientX);
+    renderSlider(slider);
+    updatePrintSliders();
+    updateResults();
+  }
+  slider.addEventListener('mousedown', function(e){ dragging=true; onMove(e); });
+  slider.addEventListener('touchstart', function(e){ dragging=true; onMove(e); }, {passive:true});
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('touchmove', onMove, {passive:true});
+  document.addEventListener('mouseup', function(){ dragging=false; });
+  document.addEventListener('touchend', function(){ dragging=false; });
+  slider.setAttribute('tabindex','0');
+  slider.setAttribute('role','slider');
+  slider.setAttribute('aria-valuemin','1');
+  slider.setAttribute('aria-valuemax','5');
+  slider.setAttribute('aria-valuenow','1');
+  slider.addEventListener('keydown', function(e) {
+    var dim = slider.dataset.dim;
+    if (e.key==='ArrowRight'||e.key==='ArrowUp') values[dim] = Math.min(5, Math.round((values[dim]+0.1)*10)/10);
+    else if (e.key==='ArrowLeft'||e.key==='ArrowDown') values[dim] = Math.max(1, Math.round((values[dim]-0.1)*10)/10);
+    else return;
+    e.preventDefault();
+    renderSlider(slider); updatePrintSliders(); updateResults();
+  });
+});
+
+function resetAll() {
+  Object.keys(values).forEach(function(d){ values[d]=1; });
+  document.querySelectorAll('.custom-slider').forEach(function(s){ renderSlider(s); });
+  updatePrintSliders(); updateResults();
+}
+
+document.getElementById('btn-reset').addEventListener('click', resetAll);
+document.getElementById('btn-print').addEventListener('click', function(){ window.print(); });
+document.getElementById('lang-select').addEventListener('change', function(){ setLanguage(this.value); });
+
+setLanguage('en-US');
+document.querySelectorAll('.custom-slider').forEach(function(s){ renderSlider(s); });
+updatePrintSliders();
+window.addEventListener('resize', function(){ document.querySelectorAll('.custom-slider').forEach(function(s){ renderSlider(s); }); });
+</script>
+</body>
+</html>
