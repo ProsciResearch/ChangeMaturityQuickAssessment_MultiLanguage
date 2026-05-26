@@ -1,1 +1,0 @@
-# ChangeMaturityQuickAssessment_MultiLanguage
